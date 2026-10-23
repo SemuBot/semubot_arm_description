@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- SemuBot arm + hand. Geometry: config/arm_geometry.yaml (generated from the CAD).
+       The CAD is a right arm; side:=left mirrors it across the x-z plane. -->
+
+  <xacro:property name="arm_geometry"
+                  value="${xacro.load_yaml('$(find semubot_arm_description)/config/arm_geometry.yaml')}"/>
+
+  <material name="arm_white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <xacro:macro name="arm_link" params="side name">
+    <xacro:property name="r" value="${1 if side == 'right' else -1}"/>
+    <xacro:property name="l" value="${arm_geometry['links'][name]}"/>
+    <link name="${side}_${name}">
+      <visual>
+        <geometry>
+          <mesh filename="package://semubot_arm_description/meshes/${side}/${name}.stl"/>
+        </geometry>
+        <material name="arm_white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://semubot_arm_description/meshes/${side}/${name}.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="${l['xyz'][0]} ${r * l['xyz'][1]} ${l['xyz'][2]}" rpy="0 0 0"/>
+        <mass value="${l['mass']}"/>
+        <inertia ixx="${l['ixx']}" ixy="0" ixz="0" iyy="${l['iyy']}" iyz="0" izz="${l['izz']}"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <!-- Positive joint motion mirrors between sides (axis x and z flip for the left arm) -->
+  <xacro:macro name="arm_joint" params="side name parent child lower upper">
+    <xacro:property name="r" value="${1 if side == 'right' else -1}"/>
+    <xacro:property name="j" value="${arm_geometry['joints'][name + '_joint']}"/>
+    <joint name="${side}_${name}_joint" type="revolute">
+      <parent link="${side}_${parent}"/>
+      <child link="${side}_${child}"/>
+      <origin xyz="${j['xyz'][0]} ${r * j['xyz'][1]} ${j['xyz'][2]}" rpy="0 0 0"/>
+      <axis xyz="${r * j['axis'][0]} ${j['axis'][1]} ${r * j['axis'][2]}"/>
+      <!-- Limits are estimates, not from the servo setup -->
+      <limit lower="${lower}" upper="${upper}" effort="3.0" velocity="3.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- One arm. ${side}_arm_base is the shoulder mount; its origin is on the shoulder
+       pitch axis. Attach it to "parent" at xyz/rpy. -->
+  <xacro:macro name="semubot_arm" params="side parent *origin">
+    <xacro:arm_link side="${side}" name="arm_base"/>
+    <joint name="${side}_arm_mount_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${side}_arm_base"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <xacro:arm_link side="${side}" name="shoulder_pitch_link"/>
+    <xacro:arm_link side="${side}" name="shoulder_roll_link"/>
+    <xacro:arm_link side="${side}" name="shoulder_yaw_link"/>
+    <xacro:arm_link side="${side}" name="elbow_link"/>
+    <xacro:arm_link side="${side}" name="wrist_yaw_link"/>
+    <xacro:arm_link side="${side}" name="wrist_roll_link"/>
+    <xacro:arm_joint side="${side}" name="shoulder_pitch" parent="arm_base" child="shoulder_pitch_link" lower="${-pi/2}" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="shoulder_roll" parent="shoulder_pitch_link" child="shoulder_roll_link" lower="${-pi/2}" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="shoulder_yaw" parent="shoulder_roll_link" child="shoulder_yaw_link" lower="${-pi/2}" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="elbow" parent="shoulder_yaw_link" child="elbow_link" lower="${-pi/2}" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="wrist_yaw" parent="elbow_link" child="wrist_yaw_link" lower="${-pi/2}" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="wrist_roll" parent="wrist_yaw_link" child="wrist_roll_link" lower="${-pi/2}" upper="${pi/2}"/>
+
+    <!-- Hand -->
+    <xacro:property name="r" value="${1 if side == 'right' else -1}"/>
+    <xacro:property name="hj" value="${arm_geometry['joints']['hand_joint']}"/>
+    <xacro:arm_link side="${side}" name="hand"/>
+    <joint name="${side}_hand_joint" type="fixed">
+      <parent link="${side}_wrist_roll_link"/>
+      <child link="${side}_hand"/>
+      <origin xyz="${hj['xyz'][0]} ${r * hj['xyz'][1]} ${hj['xyz'][2]}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- One joint per finger: each spring finger has one servo that bends it as a whole.
+         Positive = closing. -->
+    <xacro:arm_link side="${side}" name="thumb_link"/>
+    <xacro:arm_link side="${side}" name="index_link"/>
+    <xacro:arm_link side="${side}" name="middle_link"/>
+    <xacro:arm_link side="${side}" name="ring_link"/>
+    <xacro:arm_link side="${side}" name="little_link"/>
+    <xacro:arm_joint side="${side}" name="thumb" parent="hand" child="thumb_link" lower="0" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="index" parent="hand" child="index_link" lower="0" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="middle" parent="hand" child="middle_link" lower="0" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="ring" parent="hand" child="ring_link" lower="0" upper="${pi/2}"/>
+    <xacro:arm_joint side="${side}" name="little" parent="hand" child="little_link" lower="0" upper="${pi/2}"/>
+  </xacro:macro>
+
+</robot>

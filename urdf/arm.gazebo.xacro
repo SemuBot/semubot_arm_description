@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Gazebo joint servos for one arm: each joint holds the angle last sent to
+       /<side>_<joint>_joint/cmd_pos (std_msgs/Float64, rad). Stand-in for the real
+       servos (and the finger springs). -->
+
+  <!-- velocity:=true holds the heavy arm joints against gravity without gain tuning.
+       Fingers use force mode: in velocity mode DART keeps a joint stuck if it starts a
+       hair past its limit, which the fingers do (lower limit 0 = their start pose). -->
+  <xacro:macro name="arm_servo" params="side name velocity:=true">
+    <gazebo>
+      <plugin filename="gz-sim-joint-position-controller-system"
+              name="gz::sim::systems::JointPositionController">
+        <joint_name>${side}_${name}_joint</joint_name>
+        <topic>${side}_${name}_joint/cmd_pos</topic>
+        <use_velocity_commands>${velocity}</use_velocity_commands>
+        <p_gain>5</p_gain>
+        <cmd_max>3</cmd_max>
+        <cmd_min>-3</cmd_min>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="semubot_arm_gazebo" params="side">
+    <xacro:arm_servo side="${side}" name="shoulder_pitch"/>
+    <xacro:arm_servo side="${side}" name="shoulder_roll"/>
+    <xacro:arm_servo side="${side}" name="shoulder_yaw"/>
+    <xacro:arm_servo side="${side}" name="elbow"/>
+    <xacro:arm_servo side="${side}" name="wrist_yaw"/>
+    <xacro:arm_servo side="${side}" name="wrist_roll"/>
+    <xacro:arm_servo side="${side}" name="thumb" velocity="false"/>
+    <xacro:arm_servo side="${side}" name="index" velocity="false"/>
+    <xacro:arm_servo side="${side}" name="middle" velocity="false"/>
+    <xacro:arm_servo side="${side}" name="ring" velocity="false"/>
+    <xacro:arm_servo side="${side}" name="little" velocity="false"/>
+  </xacro:macro>
+
+</robot>

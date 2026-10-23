@@ -1,0 +1,10 @@
+# Build files
+build/
+install/
+log/
+
+# VSCode files
+.vscode/
+
+# Python
+__pycache__/

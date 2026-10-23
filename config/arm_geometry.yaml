@@ -1,0 +1,30 @@
+# From the semubot-mechanics/Hand_Arm CAD.
+# Right-arm values in the robot frame (x forward, y left, z up), metres and kg.
+# Masses are estimates.
+links:
+  arm_base: {xyz: [0.00000, 0.03020, -0.01475], mass: 0.3, ixx: 2.196e-04, iyy: 1.631e-04, izz: 1.015e-04}
+  shoulder_pitch_link: {xyz: [0.00000, -0.04387, 0.00000], mass: 0.3, ixx: 3.711e-04, iyy: 3.195e-04, izz: 3.710e-04}
+  shoulder_roll_link: {xyz: [-0.03097, 0.00000, -0.06507], mass: 0.4, ixx: 1.069e-03, iyy: 1.076e-03, izz: 4.335e-04}
+  shoulder_yaw_link: {xyz: [-0.00007, 0.00040, -0.07325], mass: 0.3, ixx: 7.295e-04, iyy: 7.296e-04, izz: 3.194e-04}
+  elbow_link: {xyz: [-0.00067, 0.02749, -0.06516], mass: 0.3, ixx: 8.013e-04, iyy: 8.016e-04, izz: 3.198e-04}
+  wrist_yaw_link: {xyz: [-0.00040, 0.00017, -0.06629], mass: 0.2, ixx: 4.180e-04, iyy: 4.184e-04, izz: 2.118e-04}
+  wrist_roll_link: {xyz: [0.02332, 0.00001, 0.00800], mass: 0.1, ixx: 2.093e-05, iyy: 4.115e-05, izz: 2.688e-05}
+  hand: {xyz: [0.00110, 0.00517, -0.05982], mass: 0.25, ixx: 3.410e-04, iyy: 6.353e-04, izz: 3.800e-04}
+  thumb_link: {xyz: [-0.00073, 0.00634, -0.05816], mass: 0.03, ixx: 3.900e-05, iyy: 4.770e-05, izz: 1.905e-05}
+  index_link: {xyz: [0.00307, 0.00196, -0.05003], mass: 0.03, ixx: 2.554e-05, iyy: 2.726e-05, izz: 3.400e-06}
+  middle_link: {xyz: [-0.00586, 0.00190, -0.04969], mass: 0.03, ixx: 2.538e-05, iyy: 2.559e-05, izz: 1.787e-06}
+  ring_link: {xyz: [-0.01013, 0.00224, -0.04901], mass: 0.03, ixx: 2.501e-05, iyy: 2.647e-05, izz: 3.475e-06}
+  little_link: {xyz: [-0.02193, 0.00437, -0.04528], mass: 0.03, ixx: 2.191e-05, iyy: 2.804e-05, izz: 8.974e-06}
+joints:
+  shoulder_pitch_joint: {xyz: [0.00000, 0.00000, 0.00000], axis: [0.00000, -1.00000, 0.00000]}
+  shoulder_roll_joint: {xyz: [0.02809, -0.06610, -0.00087], axis: [1.00000, 0.00000, 0.00000]}
+  shoulder_yaw_joint: {xyz: [-0.03175, -0.00040, -0.13323], axis: [0.00000, 0.00000, 1.00000]}
+  elbow_joint: {xyz: [-0.00311, -0.02719, -0.12456], axis: [0.00000, -1.00000, 0.00000]}
+  wrist_yaw_joint: {xyz: [-0.00026, 0.02753, -0.13388], axis: [0.00000, 0.00000, 1.00000]}
+  wrist_roll_joint: {xyz: [-0.02420, 0.00060, -0.12115], axis: [1.00000, 0.00000, 0.00000]}
+  hand_joint: {xyz: [0.00960, 0.00238, -0.01498]}
+  thumb_joint: {xyz: [0.03798, 0.01100, -0.03824], axis: [0.00000, 0.00000, 1.00000]}
+  index_joint: {xyz: [0.03682, -0.00927, -0.10031], axis: [1.00000, 0.00000, 0.00000]}
+  middle_joint: {xyz: [0.01082, -0.00951, -0.10366], axis: [1.00000, 0.00000, 0.00000]}
+  ring_joint: {xyz: [-0.01517, -0.00776, -0.10459], axis: [1.00000, 0.00000, 0.00000]}
+  little_joint: {xyz: [-0.04122, -0.00152, -0.10514], axis: [1.00000, 0.00000, 0.00000]}

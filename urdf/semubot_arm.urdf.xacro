@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="semubot_arm">
+
+  <!-- Standalone arms for viewing and testing. On the robot, semubot_description
+       includes urdf/arm.xacro and mounts the arms on the body instead. -->
+
+  <xacro:arg name="side" default="both"/>
+  <xacro:arg name="sim" default="false"/>
+  <xacro:property name="side" value="$(arg side)"/>
+  <xacro:property name="shoulder_y" value="0.2"/>
+
+  <xacro:include filename="$(find semubot_arm_description)/urdf/arm.xacro"/>
+
+  <link name="base_link"/>
+
+  <!-- Gazebo: hang the arms from a fixed point 1 m up (no body to hold them) -->
+  <xacro:if value="$(arg sim)">
+    <xacro:include filename="$(find semubot_arm_description)/urdf/arm.gazebo.xacro"/>
+    <link name="world"/>
+    <joint name="world_joint" type="fixed">
+      <parent link="world"/>
+      <child link="base_link"/>
+      <origin xyz="0 0 1.0" rpy="0 0 0"/>
+    </joint>
+    <gazebo>
+      <plugin filename="gz-sim-joint-state-publisher-system"
+              name="gz::sim::systems::JointStatePublisher"/>
+    </gazebo>
+    <xacro:if value="${side in ('right', 'both')}"><xacro:semubot_arm_gazebo side="right"/></xacro:if>
+    <xacro:if value="${side in ('left', 'both')}"><xacro:semubot_arm_gazebo side="left"/></xacro:if>
+  </xacro:if>
+
+  <xacro:if value="${side in ('right', 'both')}">
+    <xacro:semubot_arm side="right" parent="base_link">
+      <origin xyz="0 ${-shoulder_y} 0" rpy="0 0 0"/>
+    </xacro:semubot_arm>
+  </xacro:if>
+  <xacro:if value="${side in ('left', 'both')}">
+    <xacro:semubot_arm side="left" parent="base_link">
+      <origin xyz="0 ${shoulder_y} 0" rpy="0 0 0"/>
+    </xacro:semubot_arm>
+  </xacro:if>
+
+</robot>
